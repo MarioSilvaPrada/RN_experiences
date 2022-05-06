@@ -8,59 +8,89 @@
  * @format
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
-  StyleSheet,
-  Text,
   useColorScheme,
   View,
+  StyleSheet,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {LoadingButton, Modal} from 'storybook_sandbox/src/components';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  withSequence,
+  withSpring,
+  useAnimatedGestureHandler,
+  withRepeat,
+} from 'react-native-reanimated';
 
-const Section: React.FC<{
-  title: string;
-}> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+import {
+  PanGestureHandler,
+  PanGestureHandlerGestureEvent,
+} from 'react-native-gesture-handler';
+
+type ContextType = {
+  translateY: number;
+  translateX: number;
 };
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
+  const opacityValue = useSharedValue(1);
+  const translateY = useSharedValue(50);
+  const translateX = useSharedValue(50);
+
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: '#ddd',
+    flex: 1,
   };
+  const styles = StyleSheet.create({});
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacityValue.value,
+      transform: [
+        {
+          translateY: translateY.value,
+        },
+        {
+          translateX: translateX.value,
+        },
+      ],
+      width: 100,
+      height: 100,
+      backgroundColor: 'lime',
+      borderRadius: 50,
+    };
+  });
+
+  // useEffect(() => {
+  //   opacityValue.value = withRepeat(withTiming(0, {duration: 1000}), 10, true);
+  // }, [opacityValue]);
+
+  const panGestureEvent = useAnimatedGestureHandler<
+    PanGestureHandlerGestureEvent,
+    ContextType
+  >({
+    onStart: (_, context) => {
+      context.translateY = translateY.value;
+      context.translateX = translateX.value;
+    },
+    onActive: event => {
+      translateY.value = event.translationY;
+      translateX.value = event.translationX;
+    },
+    onEnd: () => {
+      translateY.value = withSpring(0, {damping: 30});
+      translateX.value = withSpring(0, {damping: 30});
+    },
+  });
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -68,48 +98,23 @@ const App = () => {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+        <View style={{marginBottom: 50}}>
+          <LoadingButton />
         </View>
+        <View style={{marginBottom: 50}}>
+          <LoadingButton loading />
+        </View>
+        <View style={{alignItems: 'center'}}>
+          <View style={{width: '80%'}}>
+            <Modal text="My first modal" />
+          </View>
+        </View>
+        <PanGestureHandler onGestureEvent={panGestureEvent}>
+          <Animated.View style={animatedStyle} />
+        </PanGestureHandler>
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
