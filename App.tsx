@@ -8,112 +8,67 @@
  * @format
  */
 
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  useColorScheme,
-  View,
-  StyleSheet,
-} from 'react-native';
+  createNativeStackNavigator,
+  NativeStackNavigationProp,
+} from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
+import {View} from 'react-native';
+import {StoryBook, Circle, Menu, AnimatedSVG} from './src';
 
-import {LoadingButton, Modal} from 'storybook_sandbox/src/components';
-import Animated, {
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-  withSequence,
-  withSpring,
-  useAnimatedGestureHandler,
-  withRepeat,
-} from 'react-native-reanimated';
-
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
-
-type ContextType = {
-  translateY: number;
-  translateX: number;
+export type Routes = {
+  Menu: undefined;
+  Circle: undefined;
+  StoryBook: undefined;
+  AnimatedSVG: undefined;
 };
 
+export type NavigationProps = NativeStackNavigationProp<Routes, 'Menu'>;
+
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const opacityValue = useSharedValue(1);
-  const translateY = useSharedValue(50);
-  const translateX = useSharedValue(50);
-
   const backgroundStyle = {
     backgroundColor: '#ddd',
     flex: 1,
   };
-  const styles = StyleSheet.create({});
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacityValue.value,
-      transform: [
-        {
-          translateY: translateY.value,
-        },
-        {
-          translateX: translateX.value,
-        },
-      ],
-      width: 100,
-      height: 100,
-      backgroundColor: 'lime',
-      borderRadius: 50,
-    };
-  });
-
-  // useEffect(() => {
-  //   opacityValue.value = withRepeat(withTiming(0, {duration: 1000}), 10, true);
-  // }, [opacityValue]);
-
-  const panGestureEvent = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    ContextType
-  >({
-    onStart: (_, context) => {
-      context.translateY = translateY.value;
-      context.translateX = translateX.value;
-    },
-    onActive: event => {
-      translateY.value = event.translationY;
-      translateX.value = event.translationX;
-    },
-    onEnd: () => {
-      translateY.value = withSpring(0, {damping: 30});
-      translateX.value = withSpring(0, {damping: 30});
-    },
-  });
+  const Stack = createNativeStackNavigator<Routes>();
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View style={{marginBottom: 50}}>
-          <LoadingButton />
-        </View>
-        <View style={{marginBottom: 50}}>
-          <LoadingButton loading />
-        </View>
-        <View style={{alignItems: 'center'}}>
-          <View style={{width: '80%'}}>
-            <Modal text="My first modal" />
-          </View>
-        </View>
-        <PanGestureHandler onGestureEvent={panGestureEvent}>
-          <Animated.View style={animatedStyle} />
-        </PanGestureHandler>
-      </ScrollView>
-    </SafeAreaView>
+    <View style={backgroundStyle}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Menu"
+            component={Menu}
+            options={{
+              title: 'Menu',
+            }}
+          />
+          <Stack.Screen
+            name="Circle"
+            component={Circle}
+            options={{
+              title: 'Circle Event',
+            }}
+          />
+          <Stack.Screen
+            name="StoryBook"
+            component={StoryBook}
+            options={{
+              title: 'StoryBook test',
+            }}
+          />
+          <Stack.Screen
+            name="AnimatedSVG"
+            component={AnimatedSVG}
+            options={{
+              title: 'Animated SVG',
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </View>
   );
 };
 
