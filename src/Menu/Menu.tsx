@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {RectButton} from 'react-native-gesture-handler';
 import {useNavigation} from '@react-navigation/native';
-import {NavigationProps, Routes} from '../../App';
+import {NavigationProps, Routes, ROUTES_OPTIONS} from '../../App';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,29 +26,17 @@ const styles = StyleSheet.create({
 });
 export const Menu = () => {
   const {navigate} = useNavigation<NavigationProps>();
-  const Pages: {screen: keyof Routes; title: string}[] = [
-    {
-      screen: 'Circle',
-      title: 'Circle',
-    },
-    {
-      screen: 'StoryBook',
-      title: 'StoryBook',
-    },
-    {
-      screen: 'AnimatedSVG',
-      title: 'AnimatedSVG',
-    },
-  ];
+
+  const Pages = Object.values(ROUTES_OPTIONS);
   return (
     <View style={styles.container}>
       {Pages.map(page => (
         <RectButton
-          key={page.screen}
+          key={page}
           style={styles.button}
-          onPress={() => navigate(page.screen)}>
+          onPress={() => navigate(page)}>
           <View style={styles.thumbnail}>
-            <Text style={styles.title}>{page.title}</Text>
+            <Text style={styles.title}>{page}</Text>
           </View>
         </RectButton>
       ))}

@@ -29,7 +29,7 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 export const AnimatedSVG = () => {
   const [screenHeight, setScreenHeight] = useState<number>();
-  const GRID_NUMBER = 10;
+  const GRID_NUMBER = 20;
   const svgHeight = screenHeight ? screenHeight - 50 : 0;
   const px = WIDTH / GRID_NUMBER;
   const py = svgHeight / GRID_NUMBER;
@@ -39,12 +39,10 @@ export const AnimatedSVG = () => {
   const animatedProps = useAnimatedProps(() => {
     const pathArr = [
       'M0 0',
-      `L${px * 2} 0`,
-      `Q${px * radius.value} ${py * 2},${px * radius.value} ${
-        py * radius.value
-      }`,
+      `L${px * radius.value} 0`,
+      `Q${px * radius.value} ${py * 3},${px * 2} ${py * radius.value}`,
       `V${svgHeight}`,
-      `L${px * 0} ${py * 10}`,
+      `L${px * 0} ${py * GRID_NUMBER}`,
       'Z',
     ];
     return {
