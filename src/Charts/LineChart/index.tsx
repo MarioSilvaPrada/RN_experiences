@@ -7,16 +7,17 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import {G, Line, Path, Svg} from 'react-native-svg';
+import {G, Line, Path, Rect, Svg} from 'react-native-svg';
 import {mixPath, ReText} from 'react-native-redash';
 
-import {GraphData} from '../Chart';
+import {GraphBarData, GraphData} from '../Chart';
 import ButtonSection from '../ButtonSection';
 
 type LineChartProps = {
   height: number;
   width: number;
   data: GraphData[];
+  data2: GraphBarData[][];
   leftPadding: number;
   bottomPadding: number;
 };
@@ -27,15 +28,18 @@ const LineChart: FC<LineChartProps> = ({
   height,
   width,
   data,
+  data2,
   bottomPadding,
   leftPadding,
 }) => {
+  const [currentQ, setCurrentQ] = React.useState(0);
   const selectedGraph = useSharedValue(data[0]);
   const previousGraph = useSharedValue({...data[0]});
   const isAnimationComplete = useSharedValue(true);
   const transition = useSharedValue(1);
 
   const onQuarterTapped = (quarter: number) => {
+    setCurrentQ(quarter - 1);
     if (isAnimationComplete.value) {
       isAnimationComplete.value = false;
       transition.value = 0;
@@ -100,6 +104,17 @@ const LineChart: FC<LineChartProps> = ({
               stroke={'#d7d7d7'}
               strokeWidth="1"
             />
+            {data2[currentQ].map(item => (
+              <Rect
+                key={String(item.date)}
+                x={item.x}
+                y={height}
+                width={10}
+                height={item.height}
+                fill="purple"
+              />
+            ))}
+
             <AnimatedPath animatedProps={animatedProps} strokeWidth="2" />
           </G>
         </Svg>

@@ -1,3 +1,4 @@
+// https://betterprogramming.pub/d3-and-react-native-an-essential-guide-to-line-graphs-dc1ce392b440
 import {curveBasis, line, scaleLinear, scaleTime} from 'd3';
 import React from 'react';
 import {Dimensions, StyleSheet, SafeAreaView} from 'react-native';
@@ -13,6 +14,7 @@ import {
   originalData,
 } from './Data';
 import LineChart from './LineChart';
+import {Rect} from 'react-native-svg';
 
 const {width} = Dimensions.get('screen');
 
@@ -21,11 +23,19 @@ const GRAPH_WIDTH = CARD_WIDTH - 60;
 const CARD_HEIGHT = 325;
 const GRAPH_HEIGHT = 200;
 
+const GRAPH_BAR_WIDTH = 8;
+
 export type GraphData = {
   max: number;
   min: number;
   curve: RePath;
   mostRecent: number;
+};
+
+export type GraphBarData = {
+  date: Date;
+  x: number;
+  height: number;
 };
 
 const makeGraph = (data: DataPoint[]) => {
@@ -50,11 +60,46 @@ const makeGraph = (data: DataPoint[]) => {
   };
 };
 
+const makeBarGraphData = (data: DataPoint[]) => {
+  const max = Math.max(...data.map(val => val.value));
+  const xDomain = [new Date(2000, 1, 1), new Date(2000, 1, 15)];
+  const xRange = [0, GRAPH_WIDTH - 20];
+  const x = scaleTime().domain(xDomain).range(xRange);
+
+  const yDomain = [0, max];
+  const yRange = [0, GRAPH_HEIGHT];
+  const y = scaleLinear().domain(yDomain).range(yRange);
+
+  return data.map(item => ({
+    date: item.date,
+    x: x(new Date(item.date)),
+    height: y(item.value) * -1,
+  }));
+
+  // return data.map(item => (
+  //   <Rect
+  //     key={item.date}
+  //     x={x(new Date(item.date))}
+  //     y={GRAPH_HEIGHT}
+  //     width={GRAPH_BAR_WIDTH}
+  //     height={y(item.value) * -1}
+  //     fill="purple"
+  //   />
+  // ));
+};
+
 const graphData: GraphData[] = [
   makeGraph(originalData),
   makeGraph(animatedData),
   makeGraph(animatedData2),
   makeGraph(animatedData3),
+];
+
+const graphBarData: GraphBarData[][] = [
+  makeBarGraphData(originalData),
+  makeBarGraphData(animatedData),
+  makeBarGraphData(animatedData2),
+  makeBarGraphData(animatedData3),
 ];
 
 export const Chart = () => {
@@ -65,6 +110,7 @@ export const Chart = () => {
           height={GRAPH_HEIGHT}
           width={GRAPH_WIDTH}
           data={graphData}
+          data2={graphBarData}
           bottomPadding={20}
           leftPadding={0}
         />
