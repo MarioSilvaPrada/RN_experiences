@@ -15,7 +15,7 @@ import {
 } from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {View} from 'react-native';
-import {StoryBook, Circle, Menu, AnimatedSVG, TabBar} from './src';
+import {StoryBook, Circle, Menu, AnimatedSVG, TabBar, Chart} from './src';
 
 export enum ROUTES_OPTIONS {
   MENU = 'Menu',
@@ -23,6 +23,7 @@ export enum ROUTES_OPTIONS {
   STORYBOOK = 'StoryBook',
   ANIMATED_SVG = 'AnimatedSVG',
   TAB_BAR = 'TabBar',
+  CHARTS = 'Charts',
 }
 
 export type Routes = {
@@ -31,6 +32,7 @@ export type Routes = {
   [ROUTES_OPTIONS.STORYBOOK]: undefined;
   [ROUTES_OPTIONS.ANIMATED_SVG]: undefined;
   [ROUTES_OPTIONS.TAB_BAR]: undefined;
+  [ROUTES_OPTIONS.CHARTS]: undefined;
 };
 
 export type NavigationProps = NativeStackNavigationProp<
@@ -83,6 +85,13 @@ const App = () => {
             component={TabBar}
             options={{
               title: 'Animated TabBar',
+            }}
+          />
+          <Stack.Screen
+            name={ROUTES_OPTIONS.CHARTS}
+            component={Chart}
+            options={{
+              title: 'Chart',
             }}
           />
         </Stack.Navigator>

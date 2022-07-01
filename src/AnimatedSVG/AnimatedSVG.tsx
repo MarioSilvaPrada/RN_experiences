@@ -29,7 +29,7 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 export const AnimatedSVG = () => {
   const [screenHeight, setScreenHeight] = useState<number>();
-  const GRID_NUMBER = 20;
+  const GRID_NUMBER = 10;
   const svgHeight = screenHeight ? screenHeight - 50 : 0;
   const px = WIDTH / GRID_NUMBER;
   const py = svgHeight / GRID_NUMBER;
